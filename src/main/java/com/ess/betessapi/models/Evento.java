@@ -139,33 +139,37 @@ public class Evento implements Subject {
 		// TODO - implement Aposta.setEstado
 
 	}
+        
+        public int calculateAward(Aposta aposta) {
+            int premio = 0;
+            switch (aposta.getResultado()) {
+                case VITORIA:
+                        premio = (int) (aposta.getM_aposta() * aposta.getOdd_fixada().getOdd1());
+                        break;
+                case EMPATE:
+                        premio = (int) (aposta.getM_aposta() * aposta.getOdd_fixada().getOddx());
+                        ;
+                        break;
+                case DERROTA:
+                        premio = (int) (aposta.getM_aposta() * aposta.getOdd_fixada().getOdd2());
+                        ;
+                        break;
+            }   
+            return premio;
+        }
 
 	public void notifyApostadores() {
-		int premio = 0;
-		if (!this.isOpen){
-			Enumeration<Aposta> lista_apostas = this.listaApostas.elements();
-			while (lista_apostas.hasMoreElements()) {
-				Aposta aposta = lista_apostas.nextElement();
+            int premio =0;
+            if (!this.isOpen){
+                Enumeration<Aposta> lista_apostas = this.listaApostas.elements();
+                while (lista_apostas.hasMoreElements()) {
+                        Aposta aposta = lista_apostas.nextElement();
 
-				if (this.resultado_final == aposta.getResultado()) {
+                        if (this.resultado_final == aposta.getResultado()) premio = calculateAward(aposta);
 
-					switch (aposta.getResultado()) {
-						case VITORIA:
-							premio = (int) (aposta.getM_aposta() * aposta.getOdd_fixada().getOdd1());
-							break;
-						case EMPATE:
-							premio = (int) (aposta.getM_aposta() * aposta.getOdd_fixada().getOddx());
-							;
-							break;
-						case DERROTA:
-							premio = (int) (aposta.getM_aposta() * aposta.getOdd_fixada().getOdd2());
-							;
-							break;
-					}
-				}
-				aposta.getApostador().update(premio+"");
-			}
-		}
+                        aposta.getApostador().update(premio+"");
+                }
+            }
 	}
 
 	public void setOdds(float odd_1, float odd_x, float odd_2) {
