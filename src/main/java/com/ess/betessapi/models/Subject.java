@@ -1,4 +1,4 @@
-package com.ess.betessapi;
+package com.ess.betessapi.models;
 
 public interface Subject {
 

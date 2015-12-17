@@ -1,5 +1,10 @@
 package com.ess.betessapi;
 
+import com.ess.betessapi.Controller.BetESSAPI;
+import com.ess.betessapi.models.Evento;
+import com.ess.betessapi.models.Apostador;
+import com.ess.betessapi.models.Bookie;
+
 public class ServiceBetAPITest {
 
     public static void main(String[] args) {
@@ -30,16 +35,18 @@ public class ServiceBetAPITest {
         // Registar apostas
         casaApostas.registaAposta(apostador1, evento1);
         casaApostas.registaAposta(apostador1, evento2);
-
-        // fechar eventos
-        casaApostas.fechaEvento(evento1, 'x');
-        casaApostas.fechaEvento(evento2, 'x');
-
         // regsitar bookies
         // TODO - implementar funcionalidades de bookie
-        // Bokkie bookie1 = casaApostas.registaBookie();
-        // Evento evento1 = casaApostas.registaEvento(bookie1);
-        // casaApostas.fechaEvento(bookie, evento1);
+         Bookie bookie1 = casaApostas.registaBookie();
+         Evento evento4 = casaApostas.registaEvento(bookie1);
+         casaApostas.fechaEvento(bookie1, evento4, '1');
+         
+         
+        // fechar eventos
+        casaApostas.fechaEvento(bookie1, evento1, 'x');
+        casaApostas.fechaEvento(bookie1, evento2, 'x');
+
+        
 
 
 

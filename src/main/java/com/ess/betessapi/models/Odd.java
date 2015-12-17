@@ -1,4 +1,4 @@
-package com.ess.betessapi;
+package com.ess.betessapi.models;
 
 public class Odd {
 
@@ -52,4 +52,10 @@ public class Odd {
 		newOdd.setOddx(this.oddx);
 		return newOdd;
 	}
+
+    @Override
+    public String toString() {
+        return "(" +odd1 + ", " + oddx + ", " + odd2 + ')';
+    }
+        
 }

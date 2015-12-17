@@ -1,6 +1,6 @@
-package com.ess.betessapi;
+package com.ess.betessapi.models;
 
-import com.ess.betessapi.Aposta;
+import com.ess.betessapi.models.Aposta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,10 +25,10 @@ public class Evento implements Subject {
 	private Date dataEvento;
 	private int id;
 	private Vector<Aposta> listaApostas;
-	private final BufferedReader in;
-	private final PrintStream out;
 	private boolean isOpen;
 	private Odd odds;
+        private Bookie creator;
+        private Bookie closer;
 
 	public Evento(String equipa1, String equipa2, Date data) {
 		this.equipa1 = equipa1;
@@ -39,9 +39,21 @@ public class Evento implements Subject {
 		this.id=uniqueId.getAndIncrement();
 		this.odds = new Odd();
 		this.listaApostas = new Vector<Aposta>();
-
-		this.in = new BufferedReader(new InputStreamReader(System.in));
-		this.out = System.out;
+                this.creator = null;
+                this.closer = null;
+                
+	}
+        public Evento(String equipa1, String equipa2,Bookie bookie, Date data) {
+		this.equipa1 = equipa1;
+		this.equipa2 = equipa2;
+		this.isOpen = false;
+		this.resultado_final = null;
+		this.dataEvento = data;
+		this.id=uniqueId.getAndIncrement();
+		this.odds = new Odd();
+		this.listaApostas = new Vector<Aposta>();
+                this.creator = bookie;
+                this.closer = null;
 	}
 
 	public Evento() {
@@ -54,8 +66,20 @@ public class Evento implements Subject {
 		this.odds = new Odd();
 		this.listaApostas = new Vector<Aposta>();
 
-		this.in = new BufferedReader(new InputStreamReader(System.in));
-		this.out = System.out;
+		this.closer = null;
+                this.creator = null;
+	}
+        public Evento(Bookie bookie) {
+		this.equipa1 = null;
+		this.equipa2 = null;
+		this.isOpen = false;
+		this.resultado_final = null;
+		this.dataEvento = null;
+		this.id=uniqueId.getAndIncrement();
+		this.odds = new Odd();
+		this.listaApostas = new Vector<Aposta>();
+                this.creator = bookie; 
+                this.closer = null;
 	}
 
 	public void setEquipa1(String equipa1) {
@@ -74,7 +98,7 @@ public class Evento implements Subject {
 		this.dataEvento = dataEvento;
 	}
 
-	public boolean fechaEvento(char resultadofinal){
+	public boolean fechaEvento(Bookie bookie, char resultadofinal){
 
 			switch (resultadofinal) {
 				case '1':
@@ -88,14 +112,15 @@ public class Evento implements Subject {
 					break;
 			}
 		this.isOpen = false;
+                this.closer = bookie;
 		this.notifyApostadores();
 		return true;
 	}
 
-	public void registaAposta(Apostador apostador) {
+	public void registaAposta(Apostador apostador, String apostaT) {
 
 		Aposta aposta = new Aposta();
-		aposta.viewCreateAposta();
+		aposta.createAposta(apostaT);
 		aposta.setApostador(apostador);
 		aposta.setOdd_fixada(this.odds);
 
@@ -153,54 +178,28 @@ public class Evento implements Subject {
 		this.odds.setOddx(odd_x);
 	}
 
-	// views Evento
+    @Override
+    public String toString() {
+        return "Evento{" +
+            "equipa1='" + equipa1 + '\'' +
+            ", equipa2='" + equipa2 + '\'' +
+            ", resultado_final=" + resultado_final +
+            ", estado=" + isOpen +
+            ", data da aposta" + dataEvento.toString() +
+            ", ultima odd" + this.odds.toString() +
+            '}';    
+    }
+    
+    public void updateEvento(String readinput){
 
-	public String viewEvento() {
-		return "Evento{" +
-				"equipa1='" + equipa1 + '\'' +
-				", equipa2='" + equipa2 + '\'' +
-				", resultado_final=" + resultado_final +
-				", estado=" + isOpen +
-				", data da aposta" + dataEvento.toString() +
-				", ultima odd" + this.odds.toString() +
-				'}';
+		
+        String[] tokens = readinput.split(",");
+        this.setEquipa2(tokens[1]);
+        this.setEquipa1(tokens[0]);
+        this.setDataEvento(Date.from(Instant.now()));
+
+		
 	}
-
-	public void viewCreateEvento(){
-
-		String readinput;
-		this.out.print("Introduza as equipas participantes no evento: (Equipa1, Equipa2, DataEvento)\n");
-		try {
-			readinput = this.in.readLine();
-			String[] tokens = readinput.split(",");
-			this.setEquipa2(tokens[1]);
-			this.setEquipa1(tokens[0]);
-			this.setDataEvento(Date.from(Instant.now()));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void viewUpdateEvento(){
-		String readinput;
-		this.out.print("Introduza as equipas participantes no evento: (Equipa1, Equipa2, DataEvento)\n");
-		try {
-			readinput = this.in.readLine();
-			String[] tokens = readinput.split(",");
-			this.setEquipa2(tokens[1]);
-			this.setEquipa1(tokens[0]);
-			this.setDataEvento(Date.from(Instant.now()));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void viewDeleteApostador(){
-		this.out.println("Remover Apostador" + this.viewEvento());
-
-	}
-
+    
 
 }
